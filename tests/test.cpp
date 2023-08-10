@@ -1,23 +1,40 @@
-// Test includes
-#include "test_system.hpp"
-#include "test_component.hpp"
-
 // MicroECS includes
-#include <component_manager.hpp>
+#include <micro_ecs/micro_ecs.hpp>
+
+// STD includes
+#include <iostream>
+
+class TestComponent : public MicroECS::Component
+{
+
+public:
+
+	TestComponent() : Component("TestComponent") {}
+
+	void Test()
+	{
+		std::cout << "Entity " << GetEntity()->GetID() << " called the method Test() !" << std::endl;
+	}
+
+};
 
 int main()
 {
-	// Instantiate system
-	TestSystem test_system;
-
 	// Add component
-	MicroECS::Entity test_entity;
-	MicroECS::ComponentManager::AddComponent<TestComponent>(&test_entity);
+	MicroECS::EntityManager manager(10, 10);
+	MicroECS::Entity * entity = manager.CreateEntity();
+	TestComponent * test_component = manager.AddComponent<TestComponent>(entity);
 
-	//
-	std::vector<MicroECS::Entity> entities;
-	entities.push_back(test_entity);
-	test_system.Update(entities);
+	// Iterate entities with the component "TestComponent"
+	manager.IterateEntitiesWithComponent<TestComponent>([&](const MicroECS::Entity & entity, TestComponent & component) 
+	{
+		std::cout << "Entity " << entity.GetID() << " has one TestComponent !" << std::endl;
+		component.Test();
+	});
+
+	// Clear
+	manager.ClearComponents();
+	manager.ClearEntities();
 
 	return 0;
 }

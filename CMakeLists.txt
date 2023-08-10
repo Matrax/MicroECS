@@ -1,29 +1,32 @@
 #CMake version
 cmake_minimum_required(VERSION 3.20)
 
-# Set CMake property
+# options
+option(BUILD_TESTS "Build the tests" OFF)
+
+# Set CMake properties
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED True)
 
 # MicroECS variables
-set(LIB_NAME "MicroECS")
-set(LIB_VERSION 1.0)
+set(MICROECS_LIB_NAME "MicroECS")
+set(MICROECS_LIB_VERSION 1.0)
+set(MICROECS_TESTS "tests/test.cpp")
+set(MICROECS_INCLUDES_DIR "${CMAKE_CURRENT_SOURCE_DIR}/includes")
 
 # Project
-project(${LIB_NAME}  
+project(${MICROECS_LIB_NAME}  
         DESCRIPTION "C++17 ECS library"
-        VERSION ${LIB_VERSION} 
+        VERSION ${MICROECS_LIB_VERSION} 
         LANGUAGES CXX)
 
 # Add the interface library
-add_library(${LIB_NAME} INTERFACE)
-target_include_directories(${LIB_NAME} INTERFACE ${CMAKE_CURRENT_SOURCE_DIR}/includes)
+add_library(${MICROECS_LIB_NAME} INTERFACE)
+target_include_directories(${MICROECS_LIB_NAME} INTERFACE ${MICROECS_INCLUDES_DIR})
 
 # Tests
-if(DEFINED MICROECS_COMPILE_TESTS)
-
-        add_executable(microecs_test "tests/test.cpp")
-        target_link_libraries(microecs_test ${LIB_NAME})
-
+if(BUILD_TESTS)
+        add_executable(microecs_test ${MICROECS_TESTS})
+        target_link_libraries(microecs_test ${MICROECS_LIB_NAME})
 endif()
 
