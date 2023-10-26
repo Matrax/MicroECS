@@ -1,5 +1,5 @@
 // MicroECS includes
-#include <micro_ecs/micro_ecs.hpp>
+#include <micro_ecs/component_pool.hpp>
 
 // STD includes
 #include <iostream>
@@ -20,21 +20,21 @@ public:
 
 int main()
 {
-	// Add component
-	MicroECS::EntityManager manager(10, 10);
-	MicroECS::Entity * entity = manager.CreateEntity();
-	TestComponent * test_component = manager.AddComponent<TestComponent>(entity);
+	// Component pool
+	MicroECS::ComponentPool<TestComponent> manager(10);
+
+	// Add entity
+	MicroECS::Entity entity;
+
+	// Add TestComponent to the entity
+	TestComponent * test_component = manager.AddComponent(&entity);
 
 	// Iterate entities with the component "TestComponent"
-	manager.IterateEntitiesWithComponent<TestComponent>([&](const MicroECS::Entity & entity, TestComponent & component) 
+	manager.IterateEntitiesWithComponent([&](const MicroECS::Entity * entity, TestComponent * component) 
 	{
-		std::cout << "Entity " << entity.GetID() << " has one TestComponent !" << std::endl;
-		component.Test();
+		std::cout << "Entity " << entity->GetID() << " has one TestComponent !" << std::endl;
+		component->Test();
 	});
-
-	// Clear
-	manager.ClearComponents();
-	manager.ClearEntities();
 
 	return 0;
 }
